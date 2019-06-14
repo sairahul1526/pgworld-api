@@ -174,11 +174,11 @@ func uploadToS3(path string, file multipart.File, extension string, maxage ...st
 	// 	ACL:         aws.String("public-read"),
 	// })
 
-	// os.Remove(savedFileName)
-	// if err != nil {
-	// 	fmt.Println("uploadToS3 "+path, err)
-	// 	return "", false
-	// }
+	os.Remove(savedFileName)
+	if err != nil {
+		fmt.Println("uploadToS3 "+path, err)
+		return "", false
+	}
 	return fileName, true
 }
 
