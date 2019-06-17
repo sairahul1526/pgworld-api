@@ -6,6 +6,8 @@ var connectionPool int
 var awsAccessKey string
 var awsSecretKey string
 
+var baseURL string
+
 var adminTable = "admins"
 var billTable = "bills"
 var employeeTable = "employees"
