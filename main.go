@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -45,20 +46,24 @@ func inits() {
 
 func main() {
 
-	dbConfig = "root:root@tcp(localhost:8889)/testDB?charset=utf8mb4"
-	connectionPool = 10
-	test = true
-	migrate = false
-	awsAccessKey = "asd"
-	awsSecretKey = "sda"
-	s3Bucket = ""
-	// dbConfig = os.Getenv("dbConfig")
-	// connectionPool, _ = strconv.Atoi(os.Getenv("connectionPool"))
-	// test, _ = strconv.ParseBool(os.Getenv("test"))
-	// migrate, _ = strconv.ParseBool(os.Getenv("migrate"))
-	// awsAccessKey = os.Getenv("awsAccessKey")
-	// awsSecretKey = os.Getenv("awsSecretKey")
-	// s3Bucket = os.Getenv("s3Bucket")
+	// root:root@tcp(localhost:8889)/testDB?charset=utf8mb4
+	// pgcruxapp:pg4c!123@tcp(pgcruxapp.clsfriejtsvw.ap-south-1.rds.amazonaws.com:3306)/pgcruxapp?charset=utf8mb4
+	// dbConfig = "pgcruxapp:pg4c!123@tcp(pgcruxapp.clsfriejtsvw.ap-south-1.rds.amazonaws.com:3306)/pgcruxapp?charset=utf8mb4"
+	// connectionPool = 10
+	// test = true
+	// migrate = false
+	// awsAccessKey = "AKIAUMOCANH676PVBR7X"
+	// awsSecretKey = "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"
+	// s3Bucket = "test-pgworld"
+	// baseURL = "https://test-pgworld.s3.ap-south-1.amazonaws.com/"
+	dbConfig = os.Getenv("dbConfig")
+	connectionPool, _ = strconv.Atoi(os.Getenv("connectionPool"))
+	test, _ = strconv.ParseBool(os.Getenv("test"))
+	migrate, _ = strconv.ParseBool(os.Getenv("migrate"))
+	awsAccessKey = os.Getenv("awsAccessKey")
+	awsSecretKey = os.Getenv("awsSecretKey")
+	s3Bucket = os.Getenv("s3Bucket")
+	baseURL = os.Getenv("baseURL")
 
 	inits()
 	defer db.Close()

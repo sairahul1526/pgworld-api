@@ -12,6 +12,10 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 func logAction(by string, logData string) {
@@ -150,10 +154,10 @@ func uploadToS3(path string, file multipart.File, extension string, maxage ...st
 		return "", false
 	}
 
-	// conf := aws.Config{Region: aws.String("ap-south-1")}
-	// sess := session.New(&conf)
+	conf := aws.Config{Region: aws.String("ap-south-1")}
+	sess := session.New(&conf)
 
-	// svc := s3manager.NewUploader(sess)
+	svc := s3manager.NewUploader(sess)
 
 	logger("Uploading file to S3...")
 
@@ -166,13 +170,13 @@ func uploadToS3(path string, file multipart.File, extension string, maxage ...st
 
 	fileName := path + "/" + getMD5Hash(savedFileName) + extension
 
-	// _, err = svc.Upload(&s3manager.UploadInput{
-	// 	Bucket:      aws.String(s3Bucket),
-	// 	Key:         aws.String(fileName),
-	// 	Body:        openedFile,
-	// 	ContentType: aws.String(getFileMIMEType(strings.ToLower(extension))),
-	// 	ACL:         aws.String("public-read"),
-	// })
+	_, err = svc.Upload(&s3manager.UploadInput{
+		Bucket:      aws.String(s3Bucket),
+		Key:         aws.String(fileName),
+		Body:        openedFile,
+		ContentType: aws.String(getFileMIMEType(strings.ToLower(extension))),
+		ACL:         aws.String("public-read"),
+	})
 
 	os.Remove(savedFileName)
 	if err != nil {
