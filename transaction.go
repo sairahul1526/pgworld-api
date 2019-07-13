@@ -27,11 +27,11 @@ func Rent(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		if len(body["bill_id"]) == 0 {
 			// log
-			logAction(body["admin_name"], "accepted rent", "7", body["hostel_id"])
+			logAction(body["admin_name"], "accepted rent ₹"+body["amount"]+" from "+body["name"], "7", body["hostel_id"])
 			insertSQL(billTable, map[string]string{"hostel_id": body["hostel_id"], "user_id": body["user_id"], "title": body["title"], "description": body["description"], "amount": body["amount"], "paid_date_time": body["paid_date_time"], "status": "1", "paid": "0"})
 		} else {
 			// log
-			logAction(body["admin_name"], "updated rent", "7", body["hostel_id"])
+			logAction(body["admin_name"], "updated rent ₹"+body["amount"]+" from "+body["name"], "7", body["hostel_id"])
 			updateSQL(billTable, url.Values{"id": {body["bill_id"]}, "hostel_id": {body["hostel_id"]}, "user_id": {body["user_id"]}}, map[string]string{"amount": body["amount"], "paid_date_time": body["paid_date_time"]})
 		}
 		response["meta"] = setMeta(status, "User updated", dialogType)
@@ -66,11 +66,11 @@ func Salary(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		if len(body["bill_id"]) == 0 {
 			// log
-			logAction(body["admin_name"], "gave salary", "8", body["hostel_id"])
+			logAction(body["admin_name"], "gave salary ₹"+body["amount"]+" to "+body["name"], "8", body["hostel_id"])
 			insertSQL(billTable, map[string]string{"hostel_id": body["hostel_id"], "employee_id": body["employee_id"], "title": body["title"], "description": body["description"], "amount": body["amount"], "paid_date_time": body["paid_date_time"], "status": "1", "paid": "1"})
 		} else {
 			// log
-			logAction(body["admin_name"], "updated rent", "8", body["hostel_id"])
+			logAction(body["admin_name"], "updated rent ₹"+body["amount"]+" to "+body["name"], "8", body["hostel_id"])
 			updateSQL(billTable, url.Values{"id": {body["bill_id"]}, "hostel_id": {body["hostel_id"]}, "employee_id": {body["employee_id"]}}, map[string]string{"amount": body["amount"], "paid_date_time": body["paid_date_time"]})
 		}
 		response["meta"] = setMeta(status, "User updated", dialogType)
