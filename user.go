@@ -133,7 +133,7 @@ func UserAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "added user", "9", body["hostel_id"])
+	logAction(body["admin_name"], "added user "+body["name"], "9", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
@@ -180,7 +180,7 @@ func UserUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "updated user", "9", body["hostel_id"])
+	logAction(body["admin_name"], "updated user "+body["name"], "9", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()

@@ -72,6 +72,9 @@ func main() {
 	// dashboard
 	router.HandleFunc("/dashboard", checkHeaders(Dashboard)).Methods("GET")
 
+	// report
+	router.HandleFunc("/report", checkHeaders(Report)).Methods("GET")
+
 	// admin
 	router.HandleFunc("/admin", checkHeaders(AdminGet)).Methods("GET")
 	router.HandleFunc("/admin", checkHeaders(AdminAdd)).Methods("POST")
