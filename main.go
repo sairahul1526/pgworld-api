@@ -69,6 +69,9 @@ func main() {
 	defer db.Close()
 	router := mux.NewRouter()
 
+	// dashboard
+	router.HandleFunc("/dashboard", checkHeaders(Dashboard)).Methods("GET")
+
 	// admin
 	router.HandleFunc("/admin", checkHeaders(AdminGet)).Methods("GET")
 	router.HandleFunc("/admin", checkHeaders(AdminAdd)).Methods("POST")

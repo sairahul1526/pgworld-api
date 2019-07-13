@@ -131,7 +131,7 @@ func NoteAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "added note")
+	logAction(body["admin_name"], "added note", "5", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
@@ -177,7 +177,7 @@ func NoteUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "updated note")
+	logAction(body["admin_name"], "updated note", "5", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()
