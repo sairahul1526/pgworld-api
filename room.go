@@ -145,7 +145,7 @@ func RoomAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "added room")
+	logAction(body["admin_name"], "added room", "6", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
@@ -191,7 +191,7 @@ func RoomUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "added room")
+	logAction(body["admin_name"], "updated room", "6", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()

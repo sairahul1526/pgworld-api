@@ -131,7 +131,7 @@ func EmployeeAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "added employee")
+	logAction(body["admin_name"], "added employee", "3", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
@@ -177,7 +177,7 @@ func EmployeeUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "updated employee")
+	logAction(body["admin_name"], "updated employee", "3", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()

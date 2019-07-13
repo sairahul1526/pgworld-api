@@ -131,7 +131,7 @@ func AdminAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "added admin")
+	// logAction(body["admin_name"], "added admin", "1", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
@@ -178,7 +178,7 @@ func AdminUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "updated admin")
+	// logAction(body["admin_name"], "updated admin", "1", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()

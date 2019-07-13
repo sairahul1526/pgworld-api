@@ -12,16 +12,17 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-func logAction(by string, logData string) {
-	// go func(by string, logData string) {
-	// 	insertSQL(logTable, map[string]string{"log": logData, "by": by})
-	// }(by, logData)
+func logAction(by string, logData string, logType string, hostelID string) {
+	go func(by string, logData string) {
+		insertSQL(logTable, map[string]string{"log": logData, "by": by, "type": logType, "hostel_id": hostelID, "status": "1", "created_date_time": time.Now().UTC().String()})
+	}(by, logData)
 }
 
 func logger(str interface{}) {
