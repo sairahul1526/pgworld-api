@@ -182,12 +182,16 @@ func UserUpdate(w http.ResponseWriter, r *http.Request) {
 	// log
 	logAction(body["admin_name"], "updated user "+body["name"], "9", body["hostel_id"])
 	delete(body, "admin_name")
+	prevRoomID := body["prev_room_id"]
+	delete(body, "prev_room_id")
 
 	body["modified_date_time"] = time.Now().UTC().String()
 
 	status, ok := updateSQL(userTable, r.URL.Query(), body)
 	w.Header().Set("Status", status)
 	if ok {
+		db.Exec("update " + roomTable + " set filled = filled + 1 where id = '" + body["room_id"] + "'")
+		db.Exec("update " + roomTable + " set filled = filled - 1 where id = '" + prevRoomID + "'")
 		response["meta"] = setMeta(status, "User updated", dialogType)
 	} else {
 		response["meta"] = setMeta(status, "", dialogType)
@@ -220,9 +224,8 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()
-	body["status"] = "0"
 
-	status, ok := updateSQL(userTable, r.URL.Query(), body)
+	status, ok := updateSQL(userTable, r.URL.Query(), map[string]string{"status": "0"})
 	w.Header().Set("Status", status)
 	if ok {
 		db.Exec("update " + roomTable + " set filled = filled - 1 where id = '" + body["room_id"] + "'")
