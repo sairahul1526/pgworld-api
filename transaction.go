@@ -22,7 +22,7 @@ func Rent(w http.ResponseWriter, r *http.Request) {
 		body[key] = value[0]
 	}
 
-	status, ok := updateSQL(userTable, url.Values{"hostel_id": {body["hostel_id"]}, "id": {body["user_id"]}}, map[string]string{"last_paid_date_time": body["last_paid_date_time"]})
+	status, ok := updateSQL(userTable, url.Values{"hostel_id": {body["hostel_id"]}, "id": {body["user_id"]}}, map[string]string{"last_paid_date_time": body["paid_date_time"], "expiry_date_time": body["expiry_date_time"]})
 	w.Header().Set("Status", status)
 	if ok {
 		if len(body["bill_id"]) == 0 {
@@ -61,7 +61,7 @@ func Salary(w http.ResponseWriter, r *http.Request) {
 		body[key] = value[0]
 	}
 
-	status, ok := updateSQL(employeeTable, url.Values{"hostel_id": {body["hostel_id"]}, "id": {body["employee_id"]}}, map[string]string{"last_paid_date_time": body["last_paid_date_time"]})
+	status, ok := updateSQL(employeeTable, url.Values{"hostel_id": {body["hostel_id"]}, "id": {body["employee_id"]}}, map[string]string{"last_paid_date_time": body["paid_date_time"], "expiry_date_time": body["expiry_date_time"]})
 	w.Header().Set("Status", status)
 	if ok {
 		if len(body["bill_id"]) == 0 {
