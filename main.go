@@ -73,7 +73,7 @@ func main() {
 	router.HandleFunc("/dashboard", checkHeaders(Dashboard)).Methods("GET")
 
 	// report
-	router.HandleFunc("/report", checkHeaders(Report)).Methods("GET")
+	router.HandleFunc("/report", Report).Methods("GET")
 
 	// admin
 	router.HandleFunc("/admin", checkHeaders(AdminGet)).Methods("GET")
