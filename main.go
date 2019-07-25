@@ -42,6 +42,7 @@ func inits() {
 	rand.Seed(time.Now().UnixNano())
 
 	connectDatabase()
+	initcache()
 }
 
 func main() {
@@ -73,7 +74,7 @@ func main() {
 	router.HandleFunc("/dashboard", checkHeaders(Dashboard)).Methods("GET")
 
 	// report
-	router.HandleFunc("/report", Report).Methods("GET")
+	router.HandleFunc("/report", checkHeaders(Report)).Methods("GET")
 
 	// admin
 	router.HandleFunc("/admin", checkHeaders(AdminGet)).Methods("GET")
@@ -107,6 +108,9 @@ func main() {
 	router.HandleFunc("/room", checkHeaders(RoomGet)).Methods("GET")
 	router.HandleFunc("/room", checkHeaders(RoomAdd)).Methods("POST")
 	router.HandleFunc("/room", checkHeaders(RoomUpdate)).Methods("PUT")
+
+	// set hostel status
+	router.HandleFunc("/hostelstatus", HostelStatus).Methods("GET")
 
 	// transactions
 	router.HandleFunc("/rent", checkHeaders(Rent)).Methods("POST")
