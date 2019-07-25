@@ -19,6 +19,33 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
+func getHostelExpiry(hostelID string) string {
+	expiry := getValueFromCache(hostelID + "_expiry")
+	if len(expiry) == 0 {
+		expiry = setHostelExpiry(hostelID)
+	}
+	if len(expiry) == 0 {
+		return "2001-10-10"
+	}
+	return expiry
+}
+
+func setHostelExpiry(hostelID string) string {
+	var expiry string
+	db.QueryRow("select expiry_date_time from " + hostelTable + " where id = '" + hostelID + "' and status = 1").Scan(&expiry)
+	setValueInCache(hostelID+"_expiry", expiry)
+	return expiry
+}
+
+func getHostelStatus(hostelID string) bool {
+	t, _ := time.Parse("2006-01-02", getHostelExpiry(hostelID))
+	diff := time.Since(t)
+	if diff.Hours() > 0 {
+		return false
+	}
+	return true
+}
+
 func logAction(by string, logData string, logType string, hostelID string) {
 	go func(by string, logData string) {
 		insertSQL(logTable, map[string]string{"log": logData, "by": by, "type": logType, "hostel_id": hostelID, "status": "1", "created_date_time": time.Now().UTC().String()})
@@ -107,6 +134,11 @@ func checkHeaders(h http.HandlerFunc) http.HandlerFunc {
 			return
 		} else if len(apikeys[r.Header.Get("apikey")]) == 0 {
 			SetReponseStatus(w, r, statusCodeBadRequest, "Unauthorized request. Not valid apikey", "", response)
+			return
+		}
+
+		if len(r.FormValue("hostel_id")) > 0 && !getHostelStatus(r.FormValue("hostel_id")) {
+			SetReponseStatus(w, r, statusCodeBadRequest, "Subscription ended", dialogType, response)
 			return
 		}
 
