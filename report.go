@@ -26,12 +26,12 @@ func Report(w http.ResponseWriter, r *http.Request) {
 		"title": "Rooms",
 		"type":  "1",
 		"data": []map[string]string{
-			map[string]string{
-				"title": "Capacity",
-				"shown": result[0]["tot_cap"],
-				"value": result[0]["tot_cap"],
-				"color": "#AED6F1",
-			},
+			// map[string]string{
+			// 	"title": "Capacity",
+			// 	"shown": result[0]["tot_cap"],
+			// 	"value": result[0]["tot_cap"],
+			// 	"color": "#AED6F1",
+			// },
 			map[string]string{
 				"title": "Filed",
 				"shown": result[0]["tot_fill"],
@@ -43,24 +43,6 @@ func Report(w http.ResponseWriter, r *http.Request) {
 				"shown": not,
 				"value": not,
 				"color": "#F5B7B1",
-			},
-		},
-	})
-
-	pies = append(pies, map[string]interface{}{
-		"title":      "Rents",
-		"color":      "#F5B7B1",
-		"data_title": "/-",
-		"type":       "2",
-		"steps":      "1000",
-		"data": []map[string]string{
-			map[string]string{
-				"title": "2019-06-01",
-				"value": "1000",
-			},
-			map[string]string{
-				"title": "2019-05-01",
-				"value": "3000",
 			},
 		},
 	})
