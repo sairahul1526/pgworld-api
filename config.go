@@ -11,10 +11,12 @@ var baseURL string
 var adminTable = "admins"
 var billTable = "bills"
 var employeeTable = "employees"
+var invoiceTable = "invoices"
 var hostelTable = "hostels"
 var logTable = "logs"
 var noteTable = "notes"
 var roomTable = "rooms"
+var supportTable = "supports"
 var userTable = "users"
 
 var billDigits = 10
@@ -47,10 +49,12 @@ var apikeys = map[string]string{
 var adminRequiredFields = []string{}
 var billRequiredFields = []string{}
 var employeeRequiredFields = []string{}
+var invoiceRequiredFields = []string{}
 var hostelRequiredFields = []string{}
 var logRequiredFields = []string{}
 var noteRequiredFields = []string{}
 var roomRequiredFields = []string{}
+var supportRequiredFields = []string{}
 var userRequiredFields = []string{}
 
 // server codes

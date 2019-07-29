@@ -91,6 +91,11 @@ func main() {
 	router.HandleFunc("/employee", checkHeaders(EmployeeAdd)).Methods("POST")
 	router.HandleFunc("/employee", checkHeaders(EmployeeUpdate)).Methods("PUT")
 
+	// invoice
+	router.HandleFunc("/invoice", checkHeaders(InvoiceGet)).Methods("GET")
+	router.HandleFunc("/invoice", checkHeaders(InvoiceAdd)).Methods("POST")
+	router.HandleFunc("/invoice", checkHeaders(InvoiceUpdate)).Methods("PUT")
+
 	// hostel
 	router.HandleFunc("/hostel", checkHeaders(HostelGet)).Methods("GET")
 	router.HandleFunc("/hostel", checkHeaders(HostelAdd)).Methods("POST")
@@ -115,6 +120,11 @@ func main() {
 	// transactions
 	router.HandleFunc("/rent", checkHeaders(Rent)).Methods("POST")
 	router.HandleFunc("/salary", checkHeaders(Salary)).Methods("POST")
+
+	// support
+	router.HandleFunc("/support", checkHeaders(SupportGet)).Methods("GET")
+	router.HandleFunc("/support", SupportAdd).Methods("POST")
+	router.HandleFunc("/support", checkHeaders(SupportUpdate)).Methods("PUT")
 
 	// user
 	router.HandleFunc("/user", checkHeaders(UserGet)).Methods("GET")

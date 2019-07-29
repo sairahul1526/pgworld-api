@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-// hostel
+// support
 
-// HostelGet .
-func HostelGet(w http.ResponseWriter, r *http.Request) {
+// SupportGet .
+func SupportGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var response = make(map[string]interface{})
@@ -74,7 +74,7 @@ func HostelGet(w http.ResponseWriter, r *http.Request) {
 		}
 		init = true
 	}
-	SQLQuery := " from `" + hostelTable + "`"
+	SQLQuery := " from `" + supportTable + "`"
 	if strings.Compare(where, "") != 0 {
 		SQLQuery += " where " + where
 	}
@@ -88,10 +88,10 @@ func HostelGet(w http.ResponseWriter, r *http.Request) {
 
 		pagination := map[string]string{}
 		if len(where) > 0 {
-			count, _, _ := selectProcess("select count(*) as ctn from `" + hostelTable + "` where " + where)
+			count, _, _ := selectProcess("select count(*) as ctn from `" + supportTable + "` where " + where)
 			pagination["total_count"] = count[0]["ctn"]
 		} else {
-			count, _, _ := selectProcess("select count(*) as ctn from `" + hostelTable + "`")
+			count, _, _ := selectProcess("select count(*) as ctn from `" + supportTable + "`")
 			pagination["total_count"] = count[0]["ctn"]
 		}
 		pagination["count"] = strconv.Itoa(len(data))
@@ -111,8 +111,8 @@ func HostelGet(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// HostelAdd .
-func HostelAdd(w http.ResponseWriter, r *http.Request) {
+// SupportAdd .
+func SupportAdd(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var response = make(map[string]interface{})
@@ -124,23 +124,23 @@ func HostelAdd(w http.ResponseWriter, r *http.Request) {
 	for key, value := range r.Form {
 		body[key] = value[0]
 	}
-	fieldCheck := requiredFiledsCheck(body, hostelRequiredFields)
+	fieldCheck := requiredFiledsCheck(body, supportRequiredFields)
 	if len(fieldCheck) > 0 {
 		SetReponseStatus(w, r, statusCodeBadRequest, fieldCheck+" required", dialogType, response)
 		return
 	}
 
 	// log
-	// logAction(body["admin_name"], "added hostel", "4", body["hostel_id"])
+	// logAction(body["admin_name"], "added support", "4", body["support_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
 	body["created_date_time"] = time.Now().UTC().String()
 
-	status, ok := insertSQL(hostelTable, body)
+	status, ok := insertSQL(supportTable, body)
 	w.Header().Set("Status", status)
 	if ok {
-		response["meta"] = setMeta(status, "Hostel added", dialogType)
+		response["meta"] = setMeta(status, "Support added", dialogType)
 	} else {
 		response["meta"] = setMeta(status, "", dialogType)
 	}
@@ -153,8 +153,8 @@ func HostelAdd(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// HostelUpdate .
-func HostelUpdate(w http.ResponseWriter, r *http.Request) {
+// SupportUpdate .
+func SupportUpdate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var response = make(map[string]interface{})
@@ -167,7 +167,7 @@ func HostelUpdate(w http.ResponseWriter, r *http.Request) {
 		body[key] = value[0]
 	}
 
-	for _, field := range hostelRequiredFields {
+	for _, field := range supportRequiredFields {
 		if _, ok := body[field]; ok {
 			if len(body[field]) == 0 {
 				SetReponseStatus(w, r, statusCodeBadRequest, field+" required", dialogType, response)
@@ -177,15 +177,15 @@ func HostelUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	// logAction(body["admin_name"], "updated hostel", "4", body["hostel_id"])
+	// logAction(body["admin_name"], "updated support", "4", body["support_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()
 
-	status, ok := updateSQL(hostelTable, r.URL.Query(), body)
+	status, ok := updateSQL(supportTable, r.URL.Query(), body)
 	w.Header().Set("Status", status)
 	if ok {
-		response["meta"] = setMeta(status, "Hostel updated", dialogType)
+		response["meta"] = setMeta(status, "Support updated", dialogType)
 	} else {
 		response["meta"] = setMeta(status, "", dialogType)
 	}
