@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // Dashboard .
@@ -29,6 +32,105 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	result, _, _ = selectProcess("select count(*) as ctn from " + employeeTable + " where status = '1' and hostel_id = '" + r.FormValue("hostel_id") + "'")
 	counts["employee"] = result[0]["ctn"]
 
+	// pies
+	pies := []map[string]interface{}{}
+
+	// room filled and capacity
+	result, _, _ = selectProcess("SELECT sum(capacity) as tot_cap, sum(filled) as tot_fill FROM " + roomTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1;")
+	cap, _ := strconv.Atoi(result[0]["tot_cap"])
+	fil, _ := strconv.Atoi(result[0]["tot_fill"])
+	not := strconv.Itoa(cap - fil)
+	pies = append(pies, map[string]interface{}{
+		"title": "Beds",
+		"type":  "1",
+		"data": []map[string]string{
+			map[string]string{
+				"title": "Filed",
+				"shown": result[0]["tot_fill"],
+				"value": result[0]["tot_fill"],
+				"color": "#A2D9CE",
+			},
+			map[string]string{
+				"title": "Vacant",
+				"shown": not,
+				"value": not,
+				"color": "#F5B7B1",
+			},
+		},
+	})
+
+	// user active and expired
+	result, _, _ = selectProcess("select count(*) as total_users, count(case when date(expiry_date_time) >= '" + strings.Split(time.Now().String(), " ")[0] + "' then 'active' end) as active_users, count(case when date(expiry_date_time) < '" + strings.Split(time.Now().String(), " ")[0] + "' then 'expired' end) as expired_users from " + userTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1")
+	pies = append(pies, map[string]interface{}{
+		"title": "Users",
+		"type":  "1",
+		"data": []map[string]string{
+			map[string]string{
+				"title": "Total",
+				"shown": result[0]["total_users"],
+				"value": result[0]["total_users"],
+				"color": "#AED6F1",
+			},
+			map[string]string{
+				"title": "Active",
+				"shown": result[0]["active_users"],
+				"value": result[0]["active_users"],
+				"color": "#A2D9CE",
+			},
+			map[string]string{
+				"title": "Due",
+				"shown": result[0]["expired_users"],
+				"value": result[0]["expired_users"],
+				"color": "#F5B7B1",
+			},
+		},
+	})
+
+	fromDate := strings.Split(time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.Local).String(), " ")[0]
+	toDate := strings.Split(time.Now().String(), " ")[0]
+
+	result, _, _ = selectProcess("select paid, sum(amount) as `amount`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and hostel_id = '1' and date(paid_date_time) >= '" + fromDate + "' and date(paid_date_time) <= '" + toDate + "' group by MONTH(paid)")
+
+	data := []map[string]string{}
+	var income, expense int
+	for _, res := range result {
+		if strings.EqualFold(res["paid"], "1") {
+			data = append(data, map[string]string{
+				"title": "Expense",
+				"value": res["amount"],
+				"color": "#F5B7B1",
+			})
+			expense, _ = strconv.Atoi(res["amount"])
+		} else {
+			data = append(data, map[string]string{
+				"title": "Income",
+				"value": res["amount"],
+				"color": "#A2D9CE",
+			})
+			income, _ = strconv.Atoi(res["amount"])
+		}
+	}
+	if income-expense > 0 {
+		data = append(data, map[string]string{
+			"title": "Total",
+			"value": "+" + strconv.Itoa(income-expense),
+			"color": "#A2D9CE",
+		})
+	} else {
+		data = append(data, map[string]string{
+			"title": "Total",
+			"value": "-" + strconv.Itoa(income-expense),
+			"color": "#F5B7B1",
+		})
+	}
+
+	pies = append(pies, map[string]interface{}{
+		"title": "Income & Expenses",
+		"type":  "1",
+		"data":  data,
+	})
+
+	response["graphs"] = pies
 	response["data"] = []map[string]string{counts}
 	response["meta"] = setMeta(statusCodeOk, "ok", "")
 

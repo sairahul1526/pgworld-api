@@ -123,7 +123,7 @@ func main() {
 
 	// support
 	router.HandleFunc("/support", checkHeaders(SupportGet)).Methods("GET")
-	router.HandleFunc("/support", SupportAdd).Methods("POST")
+	router.HandleFunc("/support", checkHeaders(SupportAdd)).Methods("POST")
 	router.HandleFunc("/support", checkHeaders(SupportUpdate)).Methods("PUT")
 
 	// user
