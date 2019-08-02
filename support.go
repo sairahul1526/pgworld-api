@@ -56,6 +56,15 @@ func SupportGet(w http.ResponseWriter, r *http.Request) {
 		delete(params, "resp")
 	}
 
+	shouldMail := false
+	shouldMailID := ""
+	if _, ok := params["shouldMail"]; ok {
+		shouldMailID = params["shouldMailID"][0]
+		shouldMail = true
+		delete(params, "shouldMail")
+		delete(params, "shouldMailID")
+	}
+
 	where := ""
 	init := false
 	for key, val := range params {
@@ -64,7 +73,7 @@ func SupportGet(w http.ResponseWriter, r *http.Request) {
 		}
 		if strings.EqualFold("name", key) {
 			where += " `" + key + "` like '%" + val[0] + "%' "
-		} else if strings.EqualFold("status", key) || strings.EqualFold("id", key) {
+		} else if strings.EqualFold("id", key) {
 			where += " `" + key + "` in (" + val[0] + ") "
 		} else if strings.EqualFold("amount", key) {
 			values := strings.Split(val[0], ",")
@@ -79,6 +88,9 @@ func SupportGet(w http.ResponseWriter, r *http.Request) {
 		SQLQuery += " where " + where
 	}
 	SQLQuery += orderBy
+	if shouldMail {
+		mailResults("select "+resp+SQLQuery, shouldMailID)
+	}
 	SQLQuery += limitOffset
 
 	data, status, ok := selectProcess("select " + resp + SQLQuery)
@@ -130,6 +142,7 @@ func SupportAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mailTo(supportEmailID, body["email"], "Hello "+body["name"]+",<br><br>Message : "+body["message"]+"<br><br>Our support team will get back to you shortly.<br><br>Regards,<br>Team Cloud PG", "Cloud PG Support #"+RandStringBytes(5), supportEmailHost, supportEmailPassword, "", supportEmailPort)
 	// log
 	// logAction(body["admin_name"], "added support", "4", body["support_id"])
 	delete(body, "admin_name")

@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-// employee
+// signup
 
-// EmployeeGet .
-func EmployeeGet(w http.ResponseWriter, r *http.Request) {
+// SignupGet .
+func SignupGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var response = make(map[string]interface{})
@@ -73,6 +73,8 @@ func EmployeeGet(w http.ResponseWriter, r *http.Request) {
 		}
 		if strings.EqualFold("name", key) {
 			where += " `" + key + "` like '%" + val[0] + "%' "
+		} else if strings.EqualFold("id", key) {
+			where += " `" + key + "` in (" + val[0] + ") "
 		} else if strings.EqualFold("amount", key) {
 			values := strings.Split(val[0], ",")
 			where += " `" + key + "` between '" + values[0] + "' and '" + values[1] + "' "
@@ -81,7 +83,7 @@ func EmployeeGet(w http.ResponseWriter, r *http.Request) {
 		}
 		init = true
 	}
-	SQLQuery := " from `" + employeeTable + "`"
+	SQLQuery := " from `" + signupTable + "`"
 	if strings.Compare(where, "") != 0 {
 		SQLQuery += " where " + where
 	}
@@ -98,10 +100,10 @@ func EmployeeGet(w http.ResponseWriter, r *http.Request) {
 
 		pagination := map[string]string{}
 		if len(where) > 0 {
-			count, _, _ := selectProcess("select count(*) as ctn from `" + employeeTable + "` where " + where)
+			count, _, _ := selectProcess("select count(*) as ctn from `" + signupTable + "` where " + where)
 			pagination["total_count"] = count[0]["ctn"]
 		} else {
-			count, _, _ := selectProcess("select count(*) as ctn from `" + employeeTable + "`")
+			count, _, _ := selectProcess("select count(*) as ctn from `" + signupTable + "`")
 			pagination["total_count"] = count[0]["ctn"]
 		}
 		pagination["count"] = strconv.Itoa(len(data))
@@ -121,8 +123,8 @@ func EmployeeGet(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// EmployeeAdd .
-func EmployeeAdd(w http.ResponseWriter, r *http.Request) {
+// SignupAdd .
+func SignupAdd(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var response = make(map[string]interface{})
@@ -134,23 +136,23 @@ func EmployeeAdd(w http.ResponseWriter, r *http.Request) {
 	for key, value := range r.Form {
 		body[key] = value[0]
 	}
-	fieldCheck := requiredFiledsCheck(body, employeeRequiredFields)
+	fieldCheck := requiredFiledsCheck(body, signupRequiredFields)
 	if len(fieldCheck) > 0 {
 		SetReponseStatus(w, r, statusCodeBadRequest, fieldCheck+" required", dialogType, response)
 		return
 	}
-
+	mailTo(supportEmailID, body["email"], "Hello "+body["name"]+",<br><br>Thanks for signing up. Our support team will get back to you shortly.<br><br>Message : "+body["message"]+"<br><br>Regards,<br>Team Cloud PG", "Cloud PG SignUp #"+RandStringBytes(5), supportEmailHost, supportEmailPassword, "", supportEmailPort)
 	// log
-	logAction(body["admin_name"], "added employee "+body["name"], "3", body["hostel_id"])
+	// logAction(body["admin_name"], "added signup", "4", body["signup_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
 	body["created_date_time"] = time.Now().UTC().String()
 
-	status, ok := insertSQL(employeeTable, body)
+	status, ok := insertSQL(signupTable, body)
 	w.Header().Set("Status", status)
 	if ok {
-		response["meta"] = setMeta(status, "Employee added", dialogType)
+		response["meta"] = setMeta(status, "Signup added", dialogType)
 	} else {
 		response["meta"] = setMeta(status, "", dialogType)
 	}
@@ -163,8 +165,8 @@ func EmployeeAdd(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// EmployeeUpdate .
-func EmployeeUpdate(w http.ResponseWriter, r *http.Request) {
+// SignupUpdate .
+func SignupUpdate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var response = make(map[string]interface{})
@@ -177,7 +179,7 @@ func EmployeeUpdate(w http.ResponseWriter, r *http.Request) {
 		body[key] = value[0]
 	}
 
-	for _, field := range employeeRequiredFields {
+	for _, field := range signupRequiredFields {
 		if _, ok := body[field]; ok {
 			if len(body[field]) == 0 {
 				SetReponseStatus(w, r, statusCodeBadRequest, field+" required", dialogType, response)
@@ -187,15 +189,15 @@ func EmployeeUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "updated employee "+body["name"], "3", body["hostel_id"])
+	// logAction(body["admin_name"], "updated signup", "4", body["signup_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()
 
-	status, ok := updateSQL(employeeTable, r.URL.Query(), body)
+	status, ok := updateSQL(signupTable, r.URL.Query(), body)
 	w.Header().Set("Status", status)
 	if ok {
-		response["meta"] = setMeta(status, "Employee updated", dialogType)
+		response["meta"] = setMeta(status, "Signup updated", dialogType)
 	} else {
 		response["meta"] = setMeta(status, "", dialogType)
 	}

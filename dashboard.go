@@ -43,18 +43,24 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	pies = append(pies, map[string]interface{}{
 		"title": "Beds",
 		"type":  "1",
-		"data": []map[string]string{
-			map[string]string{
-				"title": "Filed",
-				"shown": result[0]["tot_fill"],
-				"value": result[0]["tot_fill"],
-				"color": "#A2D9CE",
-			},
-			map[string]string{
-				"title": "Vacant",
-				"shown": not,
-				"value": not,
-				"color": "#F5B7B1",
+		"data": []map[string]interface{}{
+			map[string]interface{}{
+				"title": "Beds",
+				"type":  "1",
+				"data": []map[string]string{
+					map[string]string{
+						"title": "Filed",
+						"shown": result[0]["tot_fill"],
+						"value": result[0]["tot_fill"],
+						"color": "#9AD7CB",
+					},
+					map[string]string{
+						"title": "Vacant",
+						"shown": not,
+						"value": not,
+						"color": "#E1A1AD",
+					},
+				},
 			},
 		},
 	})
@@ -64,30 +70,36 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	pies = append(pies, map[string]interface{}{
 		"title": "Users",
 		"type":  "1",
-		"data": []map[string]string{
-			map[string]string{
-				"title": "Total",
-				"shown": result[0]["total_users"],
-				"value": result[0]["total_users"],
-				"color": "#AED6F1",
-			},
-			map[string]string{
-				"title": "Active",
-				"shown": result[0]["active_users"],
-				"value": result[0]["active_users"],
-				"color": "#A2D9CE",
-			},
-			map[string]string{
-				"title": "Due",
-				"shown": result[0]["expired_users"],
-				"value": result[0]["expired_users"],
-				"color": "#F5B7B1",
+		"data": []map[string]interface{}{
+			map[string]interface{}{
+				"title": "Users",
+				"type":  "1",
+				"data": []map[string]string{
+					map[string]string{
+						"title": "Total",
+						"shown": result[0]["total_users"],
+						"value": result[0]["total_users"],
+						"color": "#AED6F1",
+					},
+					map[string]string{
+						"title": "Active",
+						"shown": result[0]["active_users"],
+						"value": result[0]["active_users"],
+						"color": "#A2D9CE",
+					},
+					map[string]string{
+						"title": "Due",
+						"shown": result[0]["expired_users"],
+						"value": result[0]["expired_users"],
+						"color": "#E1A1AD",
+					},
+				},
 			},
 		},
 	})
 
 	fromDate := strings.Split(time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.Local).String(), " ")[0]
-	toDate := strings.Split(time.Now().String(), " ")[0]
+	toDate := strings.Split(time.Now().AddDate(0, 0, 1).String(), " ")[0]
 
 	result, _, _ = selectProcess("select paid, sum(amount) as `amount`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and hostel_id = '1' and date(paid_date_time) >= '" + fromDate + "' and date(paid_date_time) <= '" + toDate + "' group by MONTH(paid)")
 
@@ -98,14 +110,14 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 			data = append(data, map[string]string{
 				"title": "Expense",
 				"value": res["amount"],
-				"color": "#F5B7B1",
+				"color": "#E1A1AD",
 			})
 			expense, _ = strconv.Atoi(res["amount"])
 		} else {
 			data = append(data, map[string]string{
 				"title": "Income",
 				"value": res["amount"],
-				"color": "#A2D9CE",
+				"color": "#9AD7CB",
 			})
 			income, _ = strconv.Atoi(res["amount"])
 		}
@@ -114,20 +126,26 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 		data = append(data, map[string]string{
 			"title": "Total",
 			"value": "+" + strconv.Itoa(income-expense),
-			"color": "#A2D9CE",
+			"color": "#9AD7CB",
 		})
 	} else {
 		data = append(data, map[string]string{
 			"title": "Total",
-			"value": "-" + strconv.Itoa(income-expense),
-			"color": "#F5B7B1",
+			"value": strconv.Itoa(income - expense),
+			"color": "#E1A1AD",
 		})
 	}
 
 	pies = append(pies, map[string]interface{}{
 		"title": "Income & Expenses",
 		"type":  "1",
-		"data":  data,
+		"data": []map[string]interface{}{
+			map[string]interface{}{
+				"title": "Income & Expenses",
+				"type":  "1",
+				"data":  data,
+			},
+		},
 	})
 
 	response["graphs"] = pies

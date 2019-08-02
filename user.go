@@ -38,7 +38,7 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 	orderBy := " "
 
 	if _, ok := params["orderby"]; ok {
-		orderBy += " order by " + params["orderby"][0]
+		orderBy += " order by " + userTable + "." + params["orderby"][0]
 		delete(params, "orderby")
 		if _, ok := params["sortby"]; ok {
 			orderBy += " " + params["sortby"][0] + " "
@@ -47,7 +47,7 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 			orderBy += " asc "
 		}
 	} else {
-		orderBy += " order by created_date_time desc "
+		orderBy += " order by " + userTable + ".created_date_time desc "
 	}
 
 	resp := " * "
@@ -56,8 +56,17 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 		delete(params, "resp")
 	}
 
-	where := ""
-	init := false
+	shouldMail := false
+	shouldMailID := ""
+	if _, ok := params["shouldMail"]; ok {
+		shouldMailID = params["shouldMailID"][0]
+		shouldMail = true
+		delete(params, "shouldMail")
+		delete(params, "shouldMailID")
+	}
+
+	where := " users.`room_id` = rooms.`id` "
+	init := true
 	for key, val := range params {
 		if init {
 			where += " and "
@@ -65,22 +74,23 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 		if strings.EqualFold("name", key) ||
 			strings.EqualFold("phone", key) ||
 			strings.EqualFold("email", key) {
-			where += " `" + key + "` like '%" + val[0] + "%' "
-		} else if strings.EqualFold("status", key) || strings.EqualFold("user_u_id", key) {
-			where += " `" + key + "` in (" + val[0] + ") "
+			where += " " + userTable + ".`" + key + "` like '%" + val[0] + "%' "
 		} else if strings.EqualFold("rent", key) {
 			values := strings.Split(val[0], ",")
-			where += " `" + key + "` between '" + values[0] + "' and '" + values[1] + "' "
+			where += " " + userTable + ".`" + key + "` between '" + values[0] + "' and '" + values[1] + "' "
 		} else {
-			where += " `" + key + "` = '" + val[0] + "' "
+			where += " " + userTable + ".`" + key + "` = '" + val[0] + "' "
 		}
 		init = true
 	}
-	SQLQuery := " from `" + userTable + "`"
+	SQLQuery := " from `" + userTable + "`, `" + roomTable + "` "
 	if strings.Compare(where, "") != 0 {
 		SQLQuery += " where " + where
 	}
 	SQLQuery += orderBy
+	if shouldMail {
+		mailResults("select "+resp+SQLQuery, shouldMailID)
+	}
 	SQLQuery += limitOffset
 
 	data, status, ok := selectProcess("select " + resp + SQLQuery)
@@ -90,7 +100,7 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 
 		pagination := map[string]string{}
 		if len(where) > 0 {
-			count, _, _ := selectProcess("select count(*) as ctn from `" + userTable + "` where " + where)
+			count, _, _ := selectProcess("select count(*) as ctn from `" + userTable + "`, `" + roomTable + "` where " + where)
 			pagination["total_count"] = count[0]["ctn"]
 		} else {
 			count, _, _ := selectProcess("select count(*) as ctn from `" + userTable + "`")

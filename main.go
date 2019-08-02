@@ -16,9 +16,9 @@ import (
 )
 
 var db *sql.DB
-var err error
 
 func connectDatabase() {
+	var err error
 	db, err = sql.Open("mysql", dbConfig)
 	if err != nil {
 		log.Fatal(err)
@@ -57,6 +57,10 @@ func main() {
 	// awsSecretKey = "15R9918xtsg1AsoD8YLKnx4nRYwUe3sd69TLAz2q"
 	// s3Bucket = "test-pgworld"
 	// baseURL = "https://test-pgworld.s3.ap-south-1.amazonaws.com/"
+	// supportEmailID = "rahul@gifskey.com"
+	// supportEmailPassword = "Gifskey9848$"
+	// supportEmailHost = "smtp.zoho.com"
+	// supportEmailPort = 587
 	dbConfig = os.Getenv("dbConfig")
 	connectionPool, _ = strconv.Atoi(os.Getenv("connectionPool"))
 	test, _ = strconv.ParseBool(os.Getenv("test"))
@@ -65,6 +69,10 @@ func main() {
 	awsSecretKey = os.Getenv("awsSecretKey")
 	s3Bucket = os.Getenv("s3Bucket")
 	baseURL = os.Getenv("baseURL")
+	supportEmailID = os.Getenv("supportEmailID")
+	supportEmailPassword = os.Getenv("supportEmailPassword")
+	supportEmailHost = os.Getenv("supportEmailHost")
+	supportEmailPort, _ = strconv.Atoi(os.Getenv("supportEmailPort"))
 
 	inits()
 	defer db.Close()
@@ -120,6 +128,11 @@ func main() {
 	// transactions
 	router.HandleFunc("/rent", checkHeaders(Rent)).Methods("POST")
 	router.HandleFunc("/salary", checkHeaders(Salary)).Methods("POST")
+
+	// signup
+	router.HandleFunc("/signup", checkHeaders(SignupGet)).Methods("GET")
+	router.HandleFunc("/signup", checkHeaders(SignupAdd)).Methods("POST")
+	router.HandleFunc("/signup", checkHeaders(SignupUpdate)).Methods("PUT")
 
 	// support
 	router.HandleFunc("/support", checkHeaders(SupportGet)).Methods("GET")

@@ -35,7 +35,7 @@ func updateSQL(tableName string, params url.Values, body map[string]string) (str
 
 	logger(SQLQuery)
 
-	_, err = db.Exec(SQLQuery)
+	_, err := db.Exec(SQLQuery)
 	if err != nil {
 		fmt.Println("updateSQL", err)
 		if driverErr, ok := err.(*mysql.MySQLError); ok {
@@ -53,7 +53,7 @@ func insertSQL(tableName string, body map[string]string) (string, bool) {
 	SQLQuery := buildInsertStatement(tableName, body)
 	logger(SQLQuery)
 
-	_, err = db.Exec(SQLQuery)
+	_, err := db.Exec(SQLQuery)
 	if err != nil {
 		fmt.Println("insertSQL", err)
 		if driverErr, ok := err.(*mysql.MySQLError); ok {
@@ -107,7 +107,7 @@ func deleteSQL(tableName string, params url.Values) (string, bool) {
 	}
 	logger(SQLQuery)
 
-	_, err = db.Exec(SQLQuery)
+	_, err := db.Exec(SQLQuery)
 	if err != nil {
 		fmt.Println("deleteSQL", err)
 		if driverErr, ok := err.(*mysql.MySQLError); ok {

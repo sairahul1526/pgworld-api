@@ -56,6 +56,15 @@ func RoomGet(w http.ResponseWriter, r *http.Request) {
 		delete(params, "resp")
 	}
 
+	shouldMail := false
+	shouldMailID := ""
+	if _, ok := params["shouldMail"]; ok {
+		shouldMailID = params["shouldMailID"][0]
+		shouldMail = true
+		delete(params, "shouldMail")
+		delete(params, "shouldMailID")
+	}
+
 	where := ""
 	init := false
 	for key, val := range params {
@@ -64,8 +73,6 @@ func RoomGet(w http.ResponseWriter, r *http.Request) {
 		}
 		if strings.EqualFold("roomno", key) {
 			where += " `" + key + "` like '%" + val[0] + "%' "
-		} else if strings.EqualFold("status", key) {
-			where += " `" + key + "` in (" + val[0] + ") "
 		} else if strings.EqualFold("vacant", key) {
 			where += " ((capacity - filled) > 0) "
 		} else if strings.EqualFold("amenities", key) {
@@ -93,6 +100,9 @@ func RoomGet(w http.ResponseWriter, r *http.Request) {
 		SQLQuery += " where " + where
 	}
 	SQLQuery += orderBy
+	if shouldMail {
+		mailResults("select "+resp+SQLQuery, shouldMailID)
+	}
 	SQLQuery += limitOffset
 
 	data, status, ok := selectProcess("select " + resp + SQLQuery)
