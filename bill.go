@@ -56,6 +56,15 @@ func BillGet(w http.ResponseWriter, r *http.Request) {
 		delete(params, "resp")
 	}
 
+	shouldMail := false
+	shouldMailID := ""
+	if _, ok := params["shouldMail"]; ok {
+		shouldMailID = params["shouldMailID"][0]
+		shouldMail = true
+		delete(params, "shouldMail")
+		delete(params, "shouldMailID")
+	}
+
 	where := ""
 	init := false
 	for key, val := range params {
@@ -64,13 +73,13 @@ func BillGet(w http.ResponseWriter, r *http.Request) {
 		}
 		if strings.EqualFold("title", key) {
 			where += " `" + key + "` like '%" + val[0] + "%' "
-		} else if strings.EqualFold("status", key) {
-			where += " `" + key + "` in (" + val[0] + ") "
 		} else if strings.EqualFold("type", key) {
-			if strings.EqualFold(val[0], "1") {
+			if strings.EqualFold(val[0], "10") {
 				where += " user_id is not null "
-			} else {
+			} else if strings.EqualFold(val[0], "11") {
 				where += " employee_id is not null "
+			} else {
+				where += " `" + key + "` = '" + val[0] + "' "
 			}
 		} else if strings.EqualFold("amount", key) || strings.EqualFold("paid_date_time", key) {
 			values := strings.Split(val[0], ",")
@@ -85,6 +94,9 @@ func BillGet(w http.ResponseWriter, r *http.Request) {
 		SQLQuery += " where " + where
 	}
 	SQLQuery += orderBy
+	if shouldMail {
+		mailResults("select "+resp+SQLQuery, shouldMailID)
+	}
 	SQLQuery += limitOffset
 
 	data, status, ok := selectProcess("select " + resp + SQLQuery)

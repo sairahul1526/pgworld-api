@@ -8,6 +8,11 @@ var awsSecretKey string
 
 var baseURL string
 
+var supportEmailID string
+var supportEmailPassword string
+var supportEmailHost string
+var supportEmailPort int
+
 var adminTable = "admins"
 var billTable = "bills"
 var employeeTable = "employees"
@@ -16,16 +21,9 @@ var hostelTable = "hostels"
 var logTable = "logs"
 var noteTable = "notes"
 var roomTable = "rooms"
+var signupTable = "signups"
 var supportTable = "supports"
 var userTable = "users"
-
-var billDigits = 10
-var employeeDigits = 7
-var hostelDigits = 5
-var logDigits = 15
-var noteDigits = 10
-var roomDigits = 7
-var userDigits = 10
 
 var dialogType = "1"
 var toastType = "2"
@@ -54,6 +52,7 @@ var hostelRequiredFields = []string{}
 var logRequiredFields = []string{}
 var noteRequiredFields = []string{}
 var roomRequiredFields = []string{}
+var signupRequiredFields = []string{}
 var supportRequiredFields = []string{}
 var userRequiredFields = []string{}
 

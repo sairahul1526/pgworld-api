@@ -56,6 +56,15 @@ func AdminGet(w http.ResponseWriter, r *http.Request) {
 		delete(params, "resp")
 	}
 
+	shouldMail := false
+	shouldMailID := ""
+	if _, ok := params["shouldMail"]; ok {
+		shouldMailID = params["shouldMailID"][0]
+		shouldMail = true
+		delete(params, "shouldMail")
+		delete(params, "shouldMailID")
+	}
+
 	where := ""
 	init := false
 	for key, val := range params {
@@ -64,8 +73,6 @@ func AdminGet(w http.ResponseWriter, r *http.Request) {
 		}
 		if strings.EqualFold("name", key) {
 			where += " `" + key + "` like '%" + val[0] + "%' "
-		} else if strings.EqualFold("status", key) {
-			where += " `" + key + "` in (" + val[0] + ") "
 		} else if strings.EqualFold("amount", key) {
 			values := strings.Split(val[0], ",")
 			where += " `" + key + "` between '" + values[0] + "' and '" + values[1] + "' "
@@ -79,6 +86,9 @@ func AdminGet(w http.ResponseWriter, r *http.Request) {
 		SQLQuery += " where " + where
 	}
 	SQLQuery += orderBy
+	if shouldMail {
+		mailResults("select "+resp+SQLQuery, shouldMailID)
+	}
 	SQLQuery += limitOffset
 
 	data, status, ok := selectProcess("select " + resp + SQLQuery)

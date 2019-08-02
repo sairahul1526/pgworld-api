@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/md5"
+	"encoding/csv"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -17,7 +18,39 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	gomail "gopkg.in/gomail.v2"
 )
+
+func getMonthName(id string) string {
+	switch id {
+	case "1":
+		return "Jan"
+	case "2":
+		return "Feb"
+	case "3":
+		return "Mar"
+	case "4":
+		return "Apr"
+	case "5":
+		return "May"
+	case "6":
+		return "Jun"
+	case "7":
+		return "Jul"
+	case "8":
+		return "Aug"
+	case "9":
+		return "Sep"
+	case "10":
+		return "Oct"
+	case "11":
+		return "Nov"
+	case "12":
+		return "Dec"
+	default:
+		return ""
+	}
+}
 
 func getHostelExpiry(hostelID string) string {
 	expiry := getValueFromCache(hostelID + "_expiry")
@@ -148,6 +181,82 @@ func checkHeaders(h http.HandlerFunc) http.HandlerFunc {
 		}
 		h.ServeHTTP(w, r)
 	})
+}
+
+func createCSV(fileName string) *os.File {
+	file, err := os.Create("./" + fileName + ".csv")
+	if err != nil {
+		fmt.Println("createFile", err)
+	}
+
+	return file
+}
+
+func mailResults(sqlQuery string, emailID string) {
+	fileName := RandStringBytes(10)
+	file := createCSV(fileName)
+
+	writer := csv.NewWriter(file)
+
+	result, _, _ := selectProcess(sqlQuery)
+	init := true
+	var err error
+	keys := []string{}
+	for _, data := range result {
+		if init {
+			for key := range data {
+				keys = append(keys, key)
+			}
+			err = writer.Write(keys)
+			if err != nil {
+				fmt.Println("mailResults", err)
+				break
+			}
+		}
+		vals := []string{}
+		for _, key := range keys {
+			vals = append(vals, data[key])
+		}
+		err := writer.Write(vals)
+		if err != nil {
+			fmt.Println("mailResults", err)
+			break
+		}
+		init = false
+	}
+
+	writer.Flush()
+	file.Close()
+	mailTo(supportEmailID, emailID, "Hi,<br><br>Please find requested data.<br><br>Regards,<br>Team Cloud PG", "Cloud PG Requested Data #"+RandStringBytes(5), supportEmailHost, supportEmailPassword, "./"+fileName+".csv", supportEmailPort)
+	err = os.Remove("./" + fileName + ".csv")
+	if err != nil {
+		fmt.Println("mailResults", err)
+	}
+}
+
+func mailTo(fromEmailID, toEmailID, htmlStr, subject, emailHost, emailPassword, fileName string, emailPort int) {
+	m := gomail.NewMessage()
+	m.SetHeader("From", fromEmailID)
+	m.SetHeader("To", fromEmailID)
+
+	toemails := strings.Split(toEmailID, ",")
+	addresses := make([]string, len(toemails))
+	for i, recipient := range toemails {
+		addresses[i] = m.FormatAddress(recipient, "")
+	}
+
+	m.SetHeader("Bcc", addresses...)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", htmlStr)
+	if len(fileName) > 0 {
+		m.Attach(fileName)
+	}
+
+	d := gomail.NewDialer(emailHost, emailPort, fromEmailID, emailPassword)
+
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println("mailTo", err)
+	}
 }
 
 func requiredFiledsCheck(body map[string]string, required []string) string {
