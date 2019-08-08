@@ -80,9 +80,11 @@ func getHostelStatus(hostelID string) bool {
 }
 
 func logAction(by string, logData string, logType string, hostelID string) {
-	go func(by string, logData string) {
-		insertSQL(logTable, map[string]string{"log": logData, "by": by, "type": logType, "hostel_id": hostelID, "status": "1", "created_date_time": time.Now().UTC().String()})
-	}(by, logData)
+	if len(by) > 0 {
+		go func(by string, logData string) {
+			insertSQL(logTable, map[string]string{"log": logData, "by": by, "type": logType, "hostel_id": hostelID, "status": "1", "created_date_time": time.Now().UTC().String()})
+		}(by, logData)
+	}
 }
 
 func logger(str interface{}) {

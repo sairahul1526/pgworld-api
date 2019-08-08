@@ -74,8 +74,8 @@ var migrate bool
 var iOSVersionCode = 1.0
 var iOSForceVersionCode = 1.0
 
-var androidVersionCode = 1.0
-var androidForceVersionCode = 1.0
+var androidVersionCode = 1.6
+var androidForceVersionCode = 1.6
 
 // s3
 var s3Bucket string

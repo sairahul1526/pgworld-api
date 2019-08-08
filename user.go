@@ -50,7 +50,7 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 		orderBy += " order by " + userTable + ".created_date_time desc "
 	}
 
-	resp := " * "
+	resp := " users.*, rooms.roomno "
 	if _, ok := params["resp"]; ok {
 		resp = " " + params["resp"][0] + " "
 		delete(params, "resp")
@@ -65,8 +65,8 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 		delete(params, "shouldMailID")
 	}
 
-	where := " users.`room_id` = rooms.`id` "
-	init := true
+	where := ""
+	init := false
 	for key, val := range params {
 		if init {
 			where += " and "
@@ -83,7 +83,7 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 		}
 		init = true
 	}
-	SQLQuery := " from `" + userTable + "`, `" + roomTable + "` "
+	SQLQuery := " from `" + userTable + "` left join `" + roomTable + "` on `" + userTable + "`.`room_id` = `" + roomTable + "`.`id` "
 	if strings.Compare(where, "") != 0 {
 		SQLQuery += " where " + where
 	}
@@ -96,14 +96,26 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 	data, status, ok := selectProcess("select " + resp + SQLQuery)
 	w.Header().Set("Status", status)
 	if ok {
-		response["data"] = data
+		newData := []map[string]string{}
+		for _, val := range data {
+			val["payment_status"] = "1"
+			if len(val["expiry_date_time"]) > 0 && !strings.Contains(val["expiry_date_time"], "0000") {
+				t, _ := time.Parse("2006-01-02", val["expiry_date_time"])
+				diff := time.Since(t)
+				if diff.Hours() > 0 {
+					val["payment_status"] = "0"
+				}
+			}
+			newData = append(newData, val)
+		}
+		response["data"] = newData
 
 		pagination := map[string]string{}
 		if len(where) > 0 {
-			count, _, _ := selectProcess("select count(*) as ctn from `" + userTable + "`, `" + roomTable + "` where " + where)
+			count, _, _ := selectProcess("select count(*) as ctn from `" + userTable + "` left join `" + roomTable + "` on `" + userTable + "`.`room_id` = `" + roomTable + "`.`id` where " + where)
 			pagination["total_count"] = count[0]["ctn"]
 		} else {
-			count, _, _ := selectProcess("select count(*) as ctn from `" + userTable + "`")
+			count, _, _ := selectProcess("select count(*) as ctn from `" + userTable + "` left join `" + roomTable + "` on `" + userTable + "`.`room_id` = `" + roomTable + "`.`id` ")
 			pagination["total_count"] = count[0]["ctn"]
 		}
 		pagination["count"] = strconv.Itoa(len(data))
