@@ -81,6 +81,10 @@ func main() {
 	// dashboard
 	router.HandleFunc("/dashboard", checkHeaders(Dashboard)).Methods("GET")
 
+	// otp
+	router.HandleFunc("/sendotp", checkHeaders(SendOTP)).Methods("GET")
+	router.HandleFunc("/verifyotp", checkHeaders(VerifyOTP)).Methods("GET")
+
 	// report
 	router.HandleFunc("/report", checkHeaders(Report)).Methods("GET")
 

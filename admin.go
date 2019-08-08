@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -56,6 +57,12 @@ func AdminGet(w http.ResponseWriter, r *http.Request) {
 		delete(params, "resp")
 	}
 
+	oneSignalID := ""
+	if _, ok := params["oneSignalID"]; ok {
+		oneSignalID = " " + params["oneSignalID"][0] + " "
+		delete(params, "oneSignalID")
+	}
+
 	shouldMail := false
 	shouldMailID := ""
 	if _, ok := params["shouldMail"]; ok {
@@ -95,6 +102,10 @@ func AdminGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Status", status)
 	if ok {
 		response["data"] = data
+		if len(data) > 0 && len(oneSignalID) > 0 {
+			fmt.Println("oneSignalID", oneSignalID)
+			// db.Exec("")
+		}
 
 		pagination := map[string]string{}
 		if len(where) > 0 {
