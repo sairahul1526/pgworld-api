@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -54,6 +55,12 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 	if _, ok := params["resp"]; ok {
 		resp = " " + params["resp"][0] + " "
 		delete(params, "resp")
+	}
+
+	oneSignalID := ""
+	if _, ok := params["oneSignalID"]; ok {
+		oneSignalID = " " + params["oneSignalID"][0] + " "
+		delete(params, "oneSignalID")
 	}
 
 	shouldMail := false
@@ -109,6 +116,10 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 			newData = append(newData, val)
 		}
 		response["data"] = newData
+		if len(data) > 0 && len(oneSignalID) > 0 {
+			fmt.Println("oneSignalID", oneSignalID)
+			// db.Exec("")
+		}
 
 		pagination := map[string]string{}
 		if len(where) > 0 {

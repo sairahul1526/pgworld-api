@@ -42,7 +42,7 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	not := strconv.Itoa(cap - fil)
 	pies = append(pies, map[string]interface{}{
 		"title": "Beds",
-		"type":  "1",
+		"type":  "2",
 		"data": []map[string]interface{}{
 			map[string]interface{}{
 				"title": "Beds",
@@ -101,7 +101,7 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	fromDate := strings.Split(time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.Local).String(), " ")[0]
 	toDate := strings.Split(time.Now().AddDate(0, 0, 1).String(), " ")[0]
 
-	result, _, _ = selectProcess("select paid, sum(amount) as `amount`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and hostel_id = '1' and date(paid_date_time) >= '" + fromDate + "' and date(paid_date_time) <= '" + toDate + "' group by MONTH(paid)")
+	result, _, _ = selectProcess("select paid, sum(amount) as `amount`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and date(paid_date_time) >= '" + fromDate + "' and date(paid_date_time) <= '" + toDate + "' group by MONTH(paid)")
 
 	data := []map[string]string{}
 	var income, expense int
@@ -138,7 +138,7 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 
 	pies = append(pies, map[string]interface{}{
 		"title": "Income & Expenses",
-		"type":  "1",
+		"type":  "3",
 		"data": []map[string]interface{}{
 			map[string]interface{}{
 				"title": "Income & Expenses",
