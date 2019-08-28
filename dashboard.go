@@ -49,7 +49,7 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 				"type":  "1",
 				"data": []map[string]string{
 					map[string]string{
-						"title": "Filed",
+						"title": "Filled",
 						"shown": result[0]["tot_fill"],
 						"value": result[0]["tot_fill"],
 						"color": "#9AD7CB",
