@@ -18,7 +18,7 @@ func Report(w http.ResponseWriter, r *http.Request) {
 	pies := []map[string]interface{}{}
 
 	// rents and salary
-	result, _, _ := selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 0 and user_id > 0 and hostel_id = '1' and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
+	result, _, _ := selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 0 and user_id > 0 and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
 
 	rents := []map[string]string{}
 
@@ -29,7 +29,7 @@ func Report(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	result, _, _ = selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 1 and employee_id > 0 and hostel_id = '1' and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
+	result, _, _ = selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 1 and employee_id > 0 and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
 
 	salaries := []map[string]string{}
 
@@ -59,7 +59,7 @@ func Report(w http.ResponseWriter, r *http.Request) {
 	})
 
 	// income and expense
-	result, _, _ = selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 0 and hostel_id = '1' and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
+	result, _, _ = selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 0 and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
 
 	incomes := []map[string]string{}
 
@@ -70,7 +70,7 @@ func Report(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	result, _, _ = selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 1 and hostel_id = '1' and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
+	result, _, _ = selectProcess("select sum(amount) as `amount`, MONTH(paid_date_time) as `month`  from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and paid = 1 and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by MONTH(paid_date_time)")
 
 	expenses := []map[string]string{}
 
