@@ -82,6 +82,12 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 			strings.EqualFold("phone", key) ||
 			strings.EqualFold("email", key) {
 			where += " " + userTable + ".`" + key + "` like '%" + val[0] + "%' "
+		} else if strings.EqualFold("type", key) {
+			if strings.EqualFold(val[0], "1") {
+				where += " joining > 0 "
+			} else {
+				where += " vacating > 0 "
+			}
 		} else if strings.EqualFold("rent", key) {
 			values := strings.Split(val[0], ",")
 			where += " " + userTable + ".`" + key + "` between '" + values[0] + "' and '" + values[1] + "' "
@@ -261,7 +267,107 @@ func UserDelete(w http.ResponseWriter, r *http.Request) {
 	status, ok := updateSQL(userTable, r.URL.Query(), map[string]string{"status": "0"})
 	w.Header().Set("Status", status)
 	if ok {
-		db.Exec("update " + roomTable + " set filled = filled - 1 where id = '" + body["room_id"] + "'")
+		if strings.EqualFold(body["vacating"], "1") {
+			db.Exec("update " + roomTable + " set room_vacating = room_vacating - 1, filled = filled - 1 where id = '" + body["room_id"] + "' and filled > 0 and room_vacating > 0")
+		} else {
+			db.Exec("update " + roomTable + " set filled = filled - 1 where id = '" + body["room_id"] + "' and filled > 0")
+		}
+		if strings.EqualFold(body["joining"], "1") {
+			db.Exec("update " + roomTable + " set room_joining = room_joining - 1 where id = '" + body["room_id"] + "' and room_joining > 0")
+		}
+		response["meta"] = setMeta(status, "User updated", dialogType)
+	} else {
+		response["meta"] = setMeta(status, "", dialogType)
+	}
+
+	w.WriteHeader(getHTTPStatusCode(response["meta"].(map[string]string)["status"]))
+	meta, required := checkAppUpdate(r)
+	if required {
+		response["meta"] = meta
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+// UserJoin .
+func UserJoin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var response = make(map[string]interface{})
+
+	body := map[string]string{}
+
+	r.ParseMultipartForm(32 << 20)
+
+	for key, value := range r.Form {
+		body[key] = value[0]
+	}
+
+	status, ok := updateSQL(userTable, r.URL.Query(), map[string]string{"joining_date_time": body["joining_date_time"], "joining": "1"})
+	w.Header().Set("Status", status)
+	if ok {
+		db.Exec("update " + roomTable + " set room_joining = room_joining + 1 where id = '" + body["room_id"] + "'")
+		response["meta"] = setMeta(status, "User updated", dialogType)
+	} else {
+		response["meta"] = setMeta(status, "", dialogType)
+	}
+
+	w.WriteHeader(getHTTPStatusCode(response["meta"].(map[string]string)["status"]))
+	meta, required := checkAppUpdate(r)
+	if required {
+		response["meta"] = meta
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+// UserJoined .
+func UserJoined(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var response = make(map[string]interface{})
+
+	body := map[string]string{}
+
+	r.ParseMultipartForm(32 << 20)
+
+	for key, value := range r.Form {
+		body[key] = value[0]
+	}
+
+	status, ok := updateSQL(userTable, r.URL.Query(), map[string]string{"joining": "0"})
+	w.Header().Set("Status", status)
+	if ok {
+		db.Exec("update " + roomTable + " set room_joining = room_joining - 1 where id = '" + body["room_id"] + "' and room_joining > 0")
+		response["meta"] = setMeta(status, "User updated", dialogType)
+	} else {
+		response["meta"] = setMeta(status, "", dialogType)
+	}
+
+	w.WriteHeader(getHTTPStatusCode(response["meta"].(map[string]string)["status"]))
+	meta, required := checkAppUpdate(r)
+	if required {
+		response["meta"] = meta
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+// UserVacate .
+func UserVacate(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var response = make(map[string]interface{})
+
+	body := map[string]string{}
+
+	r.ParseMultipartForm(32 << 20)
+
+	for key, value := range r.Form {
+		body[key] = value[0]
+	}
+
+	status, ok := updateSQL(userTable, r.URL.Query(), map[string]string{"vacate_date_time": body["vacate_date_time"], "vacating": "1"})
+	w.Header().Set("Status", status)
+	if ok {
+		db.Exec("update " + roomTable + " set room_vacating = room_vacating + 1 where id = '" + body["room_id"] + "'")
 		response["meta"] = setMeta(status, "User updated", dialogType)
 	} else {
 		response["meta"] = setMeta(status, "", dialogType)
