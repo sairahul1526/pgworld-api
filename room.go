@@ -85,6 +85,12 @@ func RoomGet(w http.ResponseWriter, r *http.Request) {
 				where += " amenities like '%," + val + ",%'"
 			}
 			where += " ) "
+		} else if strings.EqualFold("type", key) {
+			if strings.EqualFold(val[0], "1") {
+				where += " room_joining > 0 "
+			} else {
+				where += " room_vacating > 0 "
+			}
 		} else if strings.EqualFold("amount", key) ||
 			strings.EqualFold("rent", key) ||
 			strings.EqualFold("capacity", key) {
