@@ -88,6 +88,12 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 			} else {
 				where += " vacating > 0 "
 			}
+		} else if strings.EqualFold("payment_status", key) {
+			if strings.EqualFold(val[0], "1") {
+				where += " expiry_date_time > '" + time.Now().String() + "' "
+			} else {
+				where += " expiry_date_time <= '" + time.Now().String() + "' "
+			}
 		} else if strings.EqualFold("rent", key) {
 			values := strings.Split(val[0], ",")
 			where += " " + userTable + ".`" + key + "` between '" + values[0] + "' and '" + values[1] + "' "
