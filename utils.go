@@ -195,6 +195,7 @@ func createCSV(fileName string) *os.File {
 }
 
 func mailResults(sqlQuery string, emailID string) {
+	return
 	fileName := RandStringBytes(10)
 	file := createCSV(fileName)
 
