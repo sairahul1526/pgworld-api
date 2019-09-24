@@ -92,12 +92,91 @@ func Report(w http.ResponseWriter, r *http.Request) {
 				"data":  incomes,
 			},
 			map[string]interface{}{
-				"title": "Salary",
+				"title": "Expense",
 				"color": "#F5B7B1",
 				"data":  expenses,
 			},
 		},
 	})
+
+	// payment types
+	result, _, _ = selectProcess("select sum(amount) as `amount`, payment from " + billTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1 and date(paid_date_time) >= '" + r.FormValue("from") + "' and date(paid_date_time) <= '" + r.FormValue("to") + "' group by payment;")
+	if len(result) > 0 {
+		payments := []map[string]string{}
+		for _, val := range result {
+			switch val["payment"] {
+			case "1":
+				payments = append(payments, map[string]string{
+					"title": "Credit Card",
+					"shown": val["amount"],
+					"value": val["amount"],
+					"color": "#A2D9CE",
+				})
+			case "2":
+				payments = append(payments, map[string]string{
+					"title": "Debit Card",
+					"shown": val["amount"],
+					"value": val["amount"],
+					"color": "#A2D9CE",
+				})
+			case "3":
+				payments = append(payments, map[string]string{
+					"title": "Net Banking",
+					"shown": val["amount"],
+					"value": val["amount"],
+					"color": "#A2D9CE",
+				})
+			case "4":
+				payments = append(payments, map[string]string{
+					"title": "Google Pay",
+					"shown": val["amount"],
+					"value": val["amount"],
+					"color": "#A2D9CE",
+				})
+			case "5":
+				payments = append(payments, map[string]string{
+					"title": "PhonePe",
+					"shown": val["amount"],
+					"value": val["amount"],
+					"color": "#A2D9CE",
+				})
+			case "6":
+				payments = append(payments, map[string]string{
+					"title": "PayTM",
+					"shown": val["amount"],
+					"value": val["amount"],
+					"color": "#A2D9CE",
+				})
+			case "7":
+				payments = append(payments, map[string]string{
+					"title": "Cash",
+					"shown": result[0]["amount"],
+					"value": result[0]["amount"],
+					"color": "#A2D9CE",
+				})
+			case "8":
+				payments = append(payments, map[string]string{
+					"title": "Others",
+					"shown": result[0]["amount"],
+					"value": result[0]["amount"],
+					"color": "#A2D9CE",
+				})
+			}
+		}
+		pies = append(pies, map[string]interface{}{
+			"title":      "Payment Modes",
+			"color":      "#F5B7B1",
+			"type":       "2",
+			"horizontal": "1",
+			"data": []map[string]interface{}{
+				map[string]interface{}{
+					"title": "Amount",
+					"color": "#F5B7B1",
+					"data":  payments,
+				},
+			},
+		})
+	}
 
 	// room filled and capacity
 	result, _, _ = selectProcess("SELECT sum(capacity) as tot_cap, sum(filled) as tot_fill FROM " + roomTable + " where hostel_id = '" + r.FormValue("hostel_id") + "' and status = 1;")
