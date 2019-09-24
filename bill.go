@@ -71,7 +71,7 @@ func BillGet(w http.ResponseWriter, r *http.Request) {
 		if init {
 			where += " and "
 		}
-		if strings.EqualFold("title", key) {
+		if strings.EqualFold("title", key) || strings.EqualFold("description", key) {
 			where += " `" + key + "` like '%" + val[0] + "%' "
 		} else if strings.EqualFold("type", key) {
 			if strings.EqualFold(val[0], "10") {
