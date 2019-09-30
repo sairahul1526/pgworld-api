@@ -47,7 +47,7 @@ func EmployeeGet(w http.ResponseWriter, r *http.Request) {
 			orderBy += " asc "
 		}
 	} else {
-		orderBy += " order by created_date_time desc "
+		orderBy += " order by name asc "
 	}
 
 	resp := " * "
