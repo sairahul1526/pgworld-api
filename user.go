@@ -48,7 +48,7 @@ func UserGet(w http.ResponseWriter, r *http.Request) {
 			orderBy += " asc "
 		}
 	} else {
-		orderBy += " order by " + userTable + ".created_date_time desc "
+		orderBy += " order by " + userTable + ".name asc "
 	}
 
 	resp := " users.*, rooms.roomno "
