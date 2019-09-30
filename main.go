@@ -57,8 +57,8 @@ func main() {
 	// awsSecretKey = "15R9918xtsg1AsoD8YLKnx4nRYwUe3sd69TLAz2q"
 	// s3Bucket = "test-pgworld"
 	// baseURL = "https://test-pgworld.s3.ap-south-1.amazonaws.com/"
-	// supportEmailID = "rahul@gifskey.com"
-	// supportEmailPassword = "Gifskey9848$"
+	// supportEmailID = "support@cloudpg.in"
+	// supportEmailPassword = "sp90rt!pSs#ds"
 	// supportEmailHost = "smtp.zoho.com"
 	// supportEmailPort = 587
 	dbConfig = os.Getenv("dbConfig")
@@ -104,9 +104,19 @@ func main() {
 	router.HandleFunc("/employee", checkHeaders(EmployeeUpdate)).Methods("PUT")
 
 	// invoice
+	router.HandleFunc("/food", checkHeaders(FoodGet)).Methods("GET")
+	router.HandleFunc("/food", checkHeaders(FoodAdd)).Methods("POST")
+	router.HandleFunc("/food", checkHeaders(FoodUpdate)).Methods("PUT")
+
+	// invoice
 	router.HandleFunc("/invoice", checkHeaders(InvoiceGet)).Methods("GET")
 	router.HandleFunc("/invoice", checkHeaders(InvoiceAdd)).Methods("POST")
 	router.HandleFunc("/invoice", checkHeaders(InvoiceUpdate)).Methods("PUT")
+
+	// issue
+	router.HandleFunc("/issue", checkHeaders(IssueGet)).Methods("GET")
+	router.HandleFunc("/issue", checkHeaders(IssueAdd)).Methods("POST")
+	router.HandleFunc("/issue", checkHeaders(IssueUpdate)).Methods("PUT")
 
 	// hostel
 	router.HandleFunc("/hostel", checkHeaders(HostelGet)).Methods("GET")
@@ -120,6 +130,11 @@ func main() {
 	router.HandleFunc("/note", checkHeaders(NoteGet)).Methods("GET")
 	router.HandleFunc("/note", checkHeaders(NoteAdd)).Methods("POST")
 	router.HandleFunc("/note", checkHeaders(NoteUpdate)).Methods("PUT")
+
+	// notice
+	router.HandleFunc("/notice", checkHeaders(NoticeGet)).Methods("GET")
+	router.HandleFunc("/notice", checkHeaders(NoticeAdd)).Methods("POST")
+	router.HandleFunc("/notice", checkHeaders(NoticeUpdate)).Methods("PUT")
 
 	// room
 	router.HandleFunc("/room", checkHeaders(RoomGet)).Methods("GET")
@@ -148,6 +163,9 @@ func main() {
 	router.HandleFunc("/user", checkHeaders(UserAdd)).Methods("POST")
 	router.HandleFunc("/user", checkHeaders(UserUpdate)).Methods("PUT")
 	router.HandleFunc("/user", checkHeaders(UserDelete)).Methods("DELETE")
+	router.HandleFunc("/userbook", checkHeaders(UserJoin)).Methods("PUT")
+	router.HandleFunc("/userbooked", checkHeaders(UserJoined)).Methods("PUT")
+	router.HandleFunc("/uservacate", checkHeaders(UserVacate)).Methods("PUT")
 
 	router.HandleFunc("/upload", checkHeaders(Upload)).Methods("POST")
 
