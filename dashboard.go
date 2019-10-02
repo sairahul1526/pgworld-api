@@ -31,6 +31,9 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	// employee
 	result, _, _ = selectProcess("select count(*) as ctn from " + employeeTable + " where status = '1' and hostel_id = '" + r.FormValue("hostel_id") + "'")
 	counts["employee"] = result[0]["ctn"]
+	// issue
+	result, _, _ = selectProcess("select count(*) as ctn from " + issueTable + " where resolve = '0' and status = '1' and hostel_id = '" + r.FormValue("hostel_id") + "'")
+	counts["issue"] = result[0]["ctn"]
 
 	// pies
 	pies := []map[string]interface{}{}
