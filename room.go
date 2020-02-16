@@ -167,7 +167,17 @@ func RoomAdd(w http.ResponseWriter, r *http.Request) {
 	body["status"] = "1"
 	body["created_date_time"] = time.Now().UTC().String()
 
-	status, ok := insertSQL(roomTable, body)
+	var (
+		ok     bool
+		status string
+	)
+	for true {
+		body["id"] = RandStringBytes(roomDigits)
+		status, ok = insertSQL(roomTable, body)
+		if !strings.EqualFold(status, statusCodeDuplicateEntry) {
+			break
+		}
+	}
 	w.Header().Set("Status", status)
 	if ok {
 		response["meta"] = setMeta(status, "Room added", dialogType)

@@ -8,6 +8,8 @@ var awsSecretKey string
 
 var baseURL string
 
+var razorpayAuth string
+
 var supportEmailID string
 var supportEmailPassword string
 var supportEmailHost string
@@ -28,6 +30,18 @@ var signupTable = "signups"
 var supportTable = "supports"
 var userTable = "users"
 
+var adminDigits = 7
+var billDigits = 11
+var employeeDigits = 9
+var foodDigits = 15
+var invoiceDigits = 9
+var issueDigits = 9
+var hostelDigits = 8
+var noteDigits = 13
+var noticeDigits = 11
+var roomDigits = 12
+var userDigits = 10
+
 var dialogType = "1"
 var toastType = "2"
 var appUpdateAvailable = "3"
@@ -46,6 +60,11 @@ var apikeys = map[string]string{
 	iOSTest:     "1", // iOS test
 }
 
+var pro = map[string]int{
+	"9900":  1,
+	"49900": 6,
+}
+
 // required fields
 var adminRequiredFields = []string{}
 var billRequiredFields = []string{}
@@ -57,6 +76,7 @@ var hostelRequiredFields = []string{}
 var logRequiredFields = []string{}
 var noteRequiredFields = []string{}
 var noticeRequiredFields = []string{}
+var paymentRequiredFields = []string{}
 var roomRequiredFields = []string{}
 var signupRequiredFields = []string{}
 var supportRequiredFields = []string{}
@@ -80,8 +100,8 @@ var migrate bool
 var iOSVersionCode = 1.0
 var iOSForceVersionCode = 1.0
 
-var androidVersionCode = 1.6
-var androidForceVersionCode = 1.6
+var androidVersionCode = 3.1
+var androidForceVersionCode = 3.1
 
 // s3
 var s3Bucket string
