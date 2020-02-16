@@ -65,7 +65,7 @@ func getHostelExpiry(hostelID string) string {
 
 func setHostelExpiry(hostelID string) string {
 	var expiry string
-	db.QueryRow("select expiry_date_time from " + hostelTable + " where id = '" + hostelID + "' and status = 1").Scan(&expiry)
+	db.QueryRow("select expiry_date_time from " + hostelTable + " where id = '" + hostelID + "'").Scan(&expiry)
 	setValueInCache(hostelID+"_expiry", expiry)
 	return expiry
 }
@@ -172,10 +172,15 @@ func checkHeaders(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if len(r.FormValue("hostel_id")) > 0 && !getHostelStatus(r.FormValue("hostel_id")) {
-			SetReponseStatus(w, r, statusCodeBadRequest, "Subscription ended", dialogType, response)
-			return
-		}
+		// fmt.Println("hostel_u_id " + r.Header.Get("hostel_u_id"))
+		// if strings.EqualFold(r.URL.Path, "/admin") || (strings.EqualFold(r.URL.Path, "/hostel") && strings.EqualFold(r.Method, "POST")) {
+		// 	fmt.Println("allowed")
+		// } else {
+		// 	if len(r.Header.Get("hostel_u_id")) == 0 || len(getHostelUID(r.Header.Get("hostel_u_id"))) == 0 {
+		// 		SetReponseStatus(w, r, statusCodeBadRequest, "Valid hostel ID required", dialogType, response)
+		// 		return
+		// 	}
+		// }
 
 		if migrate { // statusCodeBadRequest because app will hit again if 500
 			SetReponseStatus(w, r, statusCodeBadRequest, "Server is busy. Please try after some time", dialogType, response)

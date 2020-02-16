@@ -149,7 +149,17 @@ func InvoiceAdd(w http.ResponseWriter, r *http.Request) {
 	body["status"] = "1"
 	body["created_date_time"] = time.Now().UTC().String()
 
-	status, ok := insertSQL(invoiceTable, body)
+	var (
+		ok     bool
+		status string
+	)
+	for true {
+		body["id"] = RandStringBytes(invoiceDigits)
+		status, ok = insertSQL(invoiceTable, body)
+		if !strings.EqualFold(status, statusCodeDuplicateEntry) {
+			break
+		}
+	}
 	w.Header().Set("Status", status)
 	if ok {
 		response["meta"] = setMeta(status, "Invoice added", dialogType)

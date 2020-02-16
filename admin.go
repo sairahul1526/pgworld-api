@@ -158,10 +158,19 @@ func AdminAdd(w http.ResponseWriter, r *http.Request) {
 	body["status"] = "1"
 	body["created_date_time"] = time.Now().UTC().String()
 
-	status, ok := insertSQL(adminTable, body)
+	var (
+		ok     bool
+		status string
+	)
+	for true {
+		body["id"] = RandStringBytes(adminDigits)
+		status, ok = insertSQL(adminTable, body)
+		if !strings.EqualFold(status, statusCodeDuplicateEntry) {
+			break
+		}
+	}
 	w.Header().Set("Status", status)
 	if ok {
-		// response["admin_u_id"] = body["admin_u_id"]
 		response["meta"] = setMeta(status, "Admin added", dialogType)
 	} else {
 		response["meta"] = setMeta(status, "", dialogType)

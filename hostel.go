@@ -74,7 +74,7 @@ func HostelGet(w http.ResponseWriter, r *http.Request) {
 		if strings.EqualFold("name", key) {
 			where += " `" + key + "` like '%" + val[0] + "%' "
 		} else if strings.EqualFold("id", key) {
-			where += " `" + key + "` in (" + val[0] + ") "
+			where += " `" + key + "` in ('" + strings.Join(strings.Split(val[0], ","), "','") + "') "
 		} else if strings.EqualFold("amount", key) {
 			values := strings.Split(val[0], ",")
 			where += " `" + key + "` between '" + values[0] + "' and '" + values[1] + "' "
@@ -149,7 +149,17 @@ func HostelAdd(w http.ResponseWriter, r *http.Request) {
 	body["status"] = "1"
 	body["created_date_time"] = time.Now().UTC().String()
 
-	status, ok := insertSQL(hostelTable, body)
+	var (
+		ok     bool
+		status string
+	)
+	for true {
+		body["id"] = RandStringBytes(hostelDigits)
+		status, ok = insertSQL(hostelTable, body)
+		if !strings.EqualFold(status, statusCodeDuplicateEntry) {
+			break
+		}
+	}
 	w.Header().Set("Status", status)
 	if ok {
 		response["meta"] = setMeta(status, "Hostel added", dialogType)

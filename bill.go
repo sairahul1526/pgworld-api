@@ -155,7 +155,17 @@ func BillAdd(w http.ResponseWriter, r *http.Request) {
 	body["status"] = "1"
 	body["created_date_time"] = time.Now().UTC().String()
 
-	status, ok := insertSQL(billTable, body)
+	var (
+		ok     bool
+		status string
+	)
+	for true {
+		body["id"] = RandStringBytes(billDigits)
+		status, ok = insertSQL(billTable, body)
+		if !strings.EqualFold(status, statusCodeDuplicateEntry) {
+			break
+		}
+	}
 	w.Header().Set("Status", status)
 	if ok {
 		// response["bill_u_id"] = body["bill_u_id"]
