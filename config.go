@@ -3,9 +3,6 @@ package main
 var dbConfig string
 var connectionPool int
 
-var awsAccessKey string
-var awsSecretKey string
-
 var baseURL string
 
 var razorpayAuth string

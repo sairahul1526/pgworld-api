@@ -3,13 +3,12 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
+	"github.com/akrylysov/algnhsa"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
@@ -17,31 +16,21 @@ import (
 var db *sql.DB
 
 func connectDatabase() {
-	var err error
-	db, err = sql.Open("mysql", dbConfig)
-	if err != nil {
-		log.Fatal(err)
+	if db == nil {
+		var err error
+		db, err = sql.Open("mysql", dbConfig)
+		if err != nil {
+			log.Fatal(err)
+		}
+		db.SetMaxOpenConns(connectionPool)
+		db.SetMaxIdleConns(connectionPool)
+		db.SetConnMaxLifetime(time.Hour)
 	}
-	db.SetMaxOpenConns(connectionPool)
-	db.SetMaxIdleConns(connectionPool)
-	db.SetConnMaxLifetime(time.Hour)
 }
 
 // HealthCheck .
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("ok")
-}
-
-func inits() {
-
-	os.Setenv("AWS_ACCESS_KEY_ID", awsAccessKey)
-	os.Setenv("AWS_SECRET_ACCESS_KEY", awsSecretKey)
-	os.Setenv("AWS_REGION", "ap-south-1")
-
-	rand.Seed(time.Now().UnixNano())
-
-	connectDatabase()
-	initcache()
 }
 
 func main() {
@@ -52,8 +41,6 @@ func main() {
 	connectionPool = 30
 	test = true
 	migrate = false
-	awsAccessKey = "AKIA3Z3BP5CCRR6LICFV"
-	awsSecretKey = "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"
 	s3Bucket = "pgworld"
 	baseURL = "https://pgworld.s3.ap-south-1.amazonaws.com/"
 	supportEmailID = "rahul.cloudpg@gmail.com"
@@ -74,8 +61,10 @@ func main() {
 	// supportEmailHost = os.Getenv("supportEmailHost")
 	// supportEmailPort, _ = strconv.Atoi(os.Getenv("supportEmailPort"))
 
-	inits()
-	defer db.Close()
+	rand.Seed(time.Now().UnixNano())
+	if db == nil {
+		connectDatabase()
+	}
 	router := mux.NewRouter()
 
 	// dashboard
@@ -147,6 +136,9 @@ func main() {
 	// hostel
 	router.HandleFunc("/hostel", checkHeaders(HostelGet)).Queries(
 		"id", "{id}",
+	).Methods("GET")
+	router.HandleFunc("/hostel", checkHeaders(HostelGet)).Queries(
+		"name", "{name}",
 	).Methods("GET")
 	router.HandleFunc("/hostel", checkHeaders(HostelAdd)).Methods("POST")
 	router.HandleFunc("/hostel", checkHeaders(HostelUpdate)).Queries(
@@ -235,7 +227,9 @@ func main() {
 
 	router.Path("/").HandlerFunc(HealthCheck).Methods("GET")
 
-	fmt.Println(http.ListenAndServe(":5000", &WithCORS{router}))
+	// fmt.Println(http.ListenAndServe(":5000", &WithCORS{router}))
+
+	algnhsa.ListenAndServe(router, nil)
 }
 
 func (s *WithCORS) ServeHTTP(res http.ResponseWriter, req *http.Request) {
