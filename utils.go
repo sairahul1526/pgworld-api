@@ -304,7 +304,7 @@ func uploadToS3(path string, file multipart.File, extension string, maxage ...st
 		return "", false
 	}
 
-	conf := aws.Config{Region: aws.String("ap-south-1")}
+	conf := aws.Config{}
 	sess := session.New(&conf)
 
 	svc := s3manager.NewUploader(sess)
@@ -339,7 +339,7 @@ func uploadToS3(path string, file multipart.File, extension string, maxage ...st
 func saveToDisk(file multipart.File, extension string) (string, bool) {
 	logger("Saving to disk...")
 
-	fileName := "./" + RandStringBytes(10) + extension
+	fileName := "/tmp/" + RandStringBytes(10) + extension
 
 	f, err := os.Create(fileName)
 	if err != nil {
