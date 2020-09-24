@@ -17,7 +17,7 @@ https://play.google.com/store/apps/details?id=com.saikrishna.cloudpg&hl=en_IN
 13. Mail data of tenants, bills, employees, rooms with filters.
 And many more.
 
-## Frontend app @ [APP](https://github.com/sairahul1526/pgworld)
+## Frontend [APP](https://github.com/sairahul1526/pgworld)
 ## PG/Hostel [Tenant App](https://github.com/sairahul1526/pgworldtenant) (Not upto 100%)
 
 
