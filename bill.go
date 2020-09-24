@@ -149,7 +149,7 @@ func BillAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "added bill of ₹"+body["amount"], "2", body["hostel_id"])
+	logAction(body["admin_name"], "added bill of "+body["amount"], "2", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["status"] = "1"
@@ -206,7 +206,7 @@ func BillUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log
-	logAction(body["admin_name"], "updated bill ₹"+body["amount"], "2", body["hostel_id"])
+	logAction(body["admin_name"], "updated bill "+body["amount"], "2", body["hostel_id"])
 	delete(body, "admin_name")
 
 	body["modified_date_time"] = time.Now().UTC().String()
